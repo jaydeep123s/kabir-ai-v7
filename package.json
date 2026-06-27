@@ -1,14 +1,17 @@
 {
   "name": "kabir-ai",
-  "version": "6.0.0",
-  "description": "Kabir AI v6 — HDMI capture card audio listening, 10-user profiles, screen capture, stealth overlay",
+  "version": "7.0.0",
+  "description": "Kabir AI v7 — Stealth Interview Assistant",
   "main": "dist/main/main.js",
   "scripts": {
     "build": "tsc && npm run bundle && npm run copy-assets",
-    "bundle": "browserify dist/renderer/renderer.js -o dist/renderer/renderer.bundle.js",
-    "copy-assets": "shx cp src/renderer/index.html dist/renderer/ && shx cp src/renderer/renderer.css dist/renderer/ && shx cp dist/renderer/renderer.bundle.js dist/renderer/renderer.js",
+    "bundle": "browserify dist/renderer/renderer.js -o dist/renderer/renderer.js --ignore-missing 2>/dev/null || browserify dist/renderer/renderer.js -o dist/renderer/renderer.bundle.js && cp dist/renderer/renderer.bundle.js dist/renderer/renderer.js",
+    "copy-assets": "shx cp src/renderer/index.html dist/renderer/ && shx cp src/renderer/renderer.css dist/renderer/",
     "start": "npm run build && electron .",
     "dev": "npm run build && electron . --dev",
+    "package:win": "npm run build && electron-builder --win --x64",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:linux": "npm run build && electron-builder --linux",
     "package": "npm run build && electron-builder"
   },
   "dependencies": {
@@ -24,12 +27,74 @@
     "typescript": "^5.4.5"
   },
   "build": {
-    "appId": "com.kabirai.app",
+    "appId": "com.kabirai.overlay",
     "productName": "Kabir AI",
-    "directories": { "output": "release" },
-    "files": ["dist/**/*"],
-    "mac": { "target": "dmg" },
-    "win": { "target": "nsis" },
-    "linux": { "target": "AppImage" }
+    "copyright": "Copyright © 2025",
+
+    "directories": {
+      "output": "release",
+      "buildResources": "assets"
+    },
+
+    "files": [
+      "dist/**/*",
+      "!dist/**/*.map"
+    ],
+
+    "extraResources": [
+      {
+        "from": "backend-bin/",
+        "to": "backend/",
+        "filter": ["**/*"]
+      },
+      {
+        "from": ".env",
+        "to": ".env"
+      }
+    ],
+
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": false,
+      "shortcutName": "Kabir AI"
+    },
+
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Utility"
+    },
+
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node",
+      "**/backend/**"
+    ]
   }
 }
