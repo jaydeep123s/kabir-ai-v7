@@ -1,0 +1,35 @@
+{
+  "name": "kabir-ai",
+  "version": "6.0.0",
+  "description": "Kabir AI v6 — HDMI capture card audio listening, 10-user profiles, screen capture, stealth overlay",
+  "main": "dist/main/main.js",
+  "scripts": {
+    "build": "tsc && npm run bundle && npm run copy-assets",
+    "bundle": "browserify dist/renderer/renderer.js -o dist/renderer/renderer.bundle.js",
+    "copy-assets": "shx cp src/renderer/index.html dist/renderer/ && shx cp src/renderer/renderer.css dist/renderer/ && shx cp dist/renderer/renderer.bundle.js dist/renderer/renderer.js",
+    "start": "npm run build && electron .",
+    "dev": "npm run build && electron . --dev",
+    "package": "npm run build && electron-builder"
+  },
+  "dependencies": {
+    "highlight.js": "^11.10.0",
+    "tesseract.js": "^5.0.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "browserify": "^17.0.0",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "shx": "^0.3.4",
+    "typescript": "^5.4.5"
+  },
+  "build": {
+    "appId": "com.kabirai.app",
+    "productName": "Kabir AI",
+    "directories": { "output": "release" },
+    "files": ["dist/**/*"],
+    "mac": { "target": "dmg" },
+    "win": { "target": "nsis" },
+    "linux": { "target": "AppImage" }
+  }
+}
